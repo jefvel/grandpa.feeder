@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxDestroyUtil;
+import states.PlayState;
 
 /**
  * ...
@@ -19,6 +20,7 @@ class Food extends WorldEntity
 	private var parent:FlxGroup;
 	private var target:FlxSprite;
 	public var startX:Float;
+	public var isProjectile = false;
 	public function new(parent:FlxGroup, target:FlxSprite) 
 	{
 		super();
@@ -68,12 +70,17 @@ class Food extends WorldEntity
 		velocity.x = (Math.random() - 0.5) * 90;
 		velocity.y = -Math.random() * 300 - 100;
 		
-	
+		velocity.x = (target.x - this.x + target.width * 0.5 - width * 0.5);
+		
+		//Projectile mode on (flies straight up)
 		if (FlxG.camera.scroll.y < -FlxG.height) {
 			y = FlxG.camera.scroll.y + FlxG.height + height;
+			x = PlayState.child.x + PlayState.child.width * 0.5 - width * 0.5;
+			isProjectile = true;
+			velocity.x = 0;
 		}
 		
-		velocity.x = (target.x - this.x + target.width * 0.5 - width * 0.5);
+		
 		velocity.y = (target.y - this.y + target.height - height * 0.5);
 		
 		var l = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);

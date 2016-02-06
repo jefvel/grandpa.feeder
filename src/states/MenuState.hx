@@ -17,9 +17,10 @@ import haxe.Timer;
  */
 class MenuState extends FlxState
 {
-	var keys = ["A", "S", "D", "W"];
+	var keys = ["A", "D", "SPACE"];
 	var entered = false;
-	
+	var logo:FlxSprite;
+	var logoBob = false;
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -27,6 +28,15 @@ class MenuState extends FlxState
 	{
 		super.create();
 		FlxG.mouse.visible = false;
+		
+		logo = new FlxSprite(0, 0, AssetPaths.mainlogo__png);
+		logo.alpha = 0;
+		Timer.delay(function(){
+			FlxTween.tween(logo, { alpha:1.0 }, 0.4);
+			FlxG.sound.playMusic(AssetPaths.main_menu__ogg);
+			logoBob = true;
+		}, 400);
+		add(logo);
 	}
 	
 	/**
@@ -38,10 +48,14 @@ class MenuState extends FlxState
 		super.destroy();
 	}
 	
+	
+	
 	function enterGame() {
 		if (entered) {
 			return;
 		}
+		
+		entered = true;
 		
 		FlxG.camera.fade(0xa2a2a2, 0.1);
 		Timer.delay(function() {
@@ -49,6 +63,10 @@ class MenuState extends FlxState
 		}, 100);
 	}
 
+	var bobs = -1;
+	var bobTime = 950;
+	var lastT = 0;
+	
 	/**
 	 * Function that is called once every frame.
 	 */
@@ -61,6 +79,22 @@ class MenuState extends FlxState
 			enterGame();
 		} else if (FlxG.keys.anyJustPressed(keys)) {
 			enterGame();
+		}
+		
+		if (logoBob) {
+			var t = Std.int(FlxG.sound.music.time);
+			if (lastT > t) {
+				bobs = 0;	
+			}
+			
+			lastT = t;
+			var currentBob = Std.int(t / bobTime);
+			if (currentBob> bobs) {
+				logo.y = 10;
+				bobs ++;
+			} else {
+				logo.y -= logo.y * 0.1;	
+			}
 		}
 	}	
 }

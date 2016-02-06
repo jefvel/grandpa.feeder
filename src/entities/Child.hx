@@ -50,8 +50,9 @@ class Child extends WorldEntity
 		animation.add("walk", [2, 3], 16, true);
 		animation.add("stand", [0], 0, false);
 		
-		x = Settings.WORLD_WIDTH * 0.5 - 100;
-		y = 0;
+		x = Settings.WORLD_WIDTH * 0.5 - 80;
+		FlxG.camera.bgColor = 0xff00ff00;
+		y = 14;
 		
 		drag.x = 600;
 		acceleration.y = 100;
@@ -86,8 +87,10 @@ class Child extends WorldEntity
 				throwing = false;
 			}, 300);
 			
-			var i = Std.int(Math.random() * throwPhrases.length);
-			throwPhrases[i].play();
+			if(Math.random() > 0.6){
+				var i = Std.int(Math.random() * throwPhrases.length);
+				throwPhrases[i].play();
+			}
 		}
 	}
 

@@ -2,7 +2,7 @@
 <project>
 	<!------------------------------APPLICATION SETTINGS---------------------------->
 	
-	<app title="Grandpa Feeding Simulator 2016" file="grandpa.pancake" main="Main" version="0.0.1" company="org.jefvel.grandpa" />
+	<app title="Please Feed Grandpa" file="grandpa.pancake" main="Main" version="0.0.1" company="org.jefvel.grandpa" />
 	
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 	<!--or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"!-->
@@ -81,6 +81,7 @@
 	
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	
-	<template path="templates" /><!--
+	<template path="templates" />
+	<!--
 	<haxeflag name="-dce" value="std" />-->
 </project>

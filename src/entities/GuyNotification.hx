@@ -52,6 +52,20 @@ class GuyNotification extends FlxSprite
 		}, 1800);
 	}
 	
+	public function forceFood() {
+		FlxG.sound.load(AssetPaths.youneedfood__ogg).play();
+		animation.play("focus");
+	
+		if (timer != null) {
+			timer.stop();
+		}
+		
+		timer = Timer.delay(function() {
+			animation.play("default");
+			timer = null;
+		}, 800);
+	}
+	
 	override public function update():Void 
 	{
 		super.update();

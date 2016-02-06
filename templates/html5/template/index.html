@@ -44,7 +44,8 @@
 			background-color:#::WIN_FLASHBACKGROUND::;
 			position:absolute;	
 			
-			box-shadow:0px 4px 16px rgba(0, 0, 0, 0.2);
+			border-top:1px solid rgba(255, 255, 255, 0.1);
+			box-shadow:0px 4px 16px rgba(0, 0, 0, 0.4);
 			
 			::if (!WIN_RESIZABLE)::
 				left:-::(WIN_WIDTH / 2)::px;
@@ -53,6 +54,7 @@
 				top:0px;
 				left:0px;
 			::end::
+
 			width: ::if (WIN_RESIZABLE)::100%::elseif (WIN_WIDTH > 0)::::WIN_WIDTH::px::else::100%::end::; height: ::if (WIN_RESIZABLE)::100%::elseif (WIN_WIDTH > 0)::::WIN_HEIGHT::px::else::100%::end::; }
 		::foreach assets::::if (type == "font")::
 		@font-face {
