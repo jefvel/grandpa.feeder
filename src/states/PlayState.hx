@@ -1,6 +1,7 @@
 package states;
 
 import entities.Bird;
+import entities.BirdUI;
 import entities.BonerEmitter;
 import entities.Child;
 import entities.FlyingEnemy;
@@ -45,7 +46,10 @@ class PlayState extends FlxState
 	var foodInHand:Food;
 	
 	var monsters:FlxGroup;
+	var monsters2:FlxGroup;
 	var boners:BonerEmitter;
+	
+	var birdUI:BirdUI;
 	
 	
 	var ground:Ground;
@@ -77,10 +81,11 @@ class PlayState extends FlxState
 		var cloudScale = 0.4;
 		for (i in 0...30) {
 			var cloud = new FlxSprite();
+			var cs = cloudScale - Math.random() * 0.01;
 			cloud.loadGraphic(AssetPaths.clouds__png, false, 128, 64);
 			cloud.x = Math.floor(Math.random() * Settings.WORLD_WIDTH - cloud.width  * 0.5);
-			cloud.y = Math.floor(-Math.random() * Settings.WORLD_HEIGHT * cloudScale);
-			cloud.scrollFactor.y = cloudScale;
+			cloud.y = Math.floor(-Math.random() * Settings.WORLD_HEIGHT * cs);
+			cloud.scrollFactor.y = cs;
 			cloud.animation.randomFrame();
 			
 			clouds.add(cloud);
@@ -123,6 +128,8 @@ class PlayState extends FlxState
 		
 		monsters = new FlxGroup();
 		add(monsters);
+		monsters2 = new FlxGroup();
+		add(monsters2);
 		
 		boners = new BonerEmitter();
 		add(boners);
@@ -142,13 +149,25 @@ class PlayState extends FlxState
 		
 		startConversation();
 		spawnMonsters();
+		
+		birdUI = new BirdUI();
+		add(birdUI);
 	}
 	
 	function spawnMonsters() {
-		for (i in 0...40) {
+		Reg.birdsLeft = Settings.BIRD_COUNT;
+		for (i in 0...Settings.BIRD_COUNT) {
 			var bird = new Bird();
-			bird.y = -200 - Math.random() * 1800;
 			monsters.add(bird);
+		}
+		
+		for (i in 0...10) {
+			var bird = new FlxSprite();
+			bird.loadGraphic(AssetPaths.angrything__png);
+				
+			bird.x = Math.random() * Settings.WORLD_WIDTH;
+			bird.y = -300 - Math.random() * (Settings.WORLD_HEIGHT - 300 - 50);
+			monsters2.add(bird);
 		}
 	}
 	
@@ -214,11 +233,7 @@ class PlayState extends FlxState
 		//FlxG.collide(grandpa, child, function(grandpa, child) {
 		//});
 		
-		FlxG.collide(grandpa, monsters, function(grandpa:Grandpa, monster:FlyingEnemy) {
-			grandpa.eatMonster(monster);
-			boners.boner(monster);
-			monsters.remove(monster);
-		});
+	
 		
 		FlxG.collide(foodContainer, ground, function(food:Food, ground) {
 			food.velocity.y = food.lvy * -0.7;
@@ -227,41 +242,69 @@ class PlayState extends FlxState
 		});
 		
 		FlxG.collide(child, ground);
-		FlxG.collide(grandpa, ground);
-		
-		FlxG.collide(foodContainer, grandpa, function(food:Food, ground:Grandpa) {
-			if(foodInHand != food){
-				food.velocity.y =-( 200 * Math.random() + 100);
-				food.acceleration.y = 700;
-				food.velocity.x = -food.lvx * 0.7;
-				grandpa.velocity.y = -400;
-				food.allowCollisions = FlxObject.NONE;
-
-				
-				if(grandpa.flying){
-					//var dx = (grandpa.x + grandpa.width * 0.5) - (food.startX + food.width * 0.5);
-					var max = 100;
-					var dx = 0.0;
-					if (food.isProjectile) {
-						dx = 6 * (grandpa.x - food.x);
-					}else{
-						dx = food.lvx;
-					}
-					
-					dx = Math.max( -max, Math.min(max, dx));
-					grandpa.velocity.x = dx;
-					grandpa.angularVelocity = dx * 10;
-				}
-				
-				punchSfx.play();
-				FlxG.camera.shake(0.01, 0.06);
+		FlxG.collide(grandpa, ground, function(grandpa:Grandpa, ground:Ground) {
+			if (grandpa.enableDeath) {
+				grandpa.die();
 			}
 		});
 		
-		if (grandpa.flying) {
-			FlxG.camera.follow(grandpa);
+		//if(!grandpa.dying){
+			FlxG.collide(grandpa, monsters2, function(grandpa:Grandpa, ground:FlxSprite) {
+				grandpa.dying = true;
+				monsters2.remove(ground);
+				FlxG.sound.load(AssetPaths.ouchie__wav).play();
+				FlxG.sound.music.volume = 0.5;
+				boners.boner(grandpa);
+				boners.boner(grandpa);
+			});
+		//}
+		
+		
+		if(!grandpa.dead && !grandpa.dying) {
+			FlxG.collide(grandpa, monsters, function(grandpa:Grandpa, monster:FlyingEnemy) {
+				grandpa.eatMonster(monster);
+				boners.boner(monster);
+				monsters.remove(monster);
+				Reg.birdsLeft --;
+			});
+			
+			FlxG.collide(foodContainer, grandpa, function(food:Food, ground:Grandpa) {
+				if(foodInHand != food){
+					food.velocity.y =-( 200 * Math.random() + 100);
+					food.acceleration.y = 700;
+					food.velocity.x = -food.lvx * 0.7;
+					grandpa.velocity.y = -400;
+					food.allowCollisions = FlxObject.NONE;
+
+					if(grandpa.flying){
+						//var dx = (grandpa.x + grandpa.width * 0.5) - (food.startX + food.width * 0.5);
+						var max = 100;
+						var dx = 0.0;
+						if (food.isProjectile) {
+							dx = 6 * ((grandpa.x + grandpa.width * 0.5) - (food.x + food.width * 0.5) );
+						}else{
+							dx = food.lvx;
+						}
+						
+						dx = Math.max( -max, Math.min(max, dx));
+						grandpa.velocity.x = dx;
+						grandpa.angularVelocity = dx * 10;
+					}
+					
+					punchSfx.play();
+					FlxG.camera.shake(0.01, 0.06);
+				}
+			});
+			if (grandpa.flying) {
+				FlxG.camera.follow(grandpa);
+			}else {
+				FlxG.camera.follow(child);
+			}
 		}else {
-			FlxG.camera.follow(child);
+			FlxG.camera.follow(null);	
+		}
+		if (grandpa.dying) {
+			FlxG.camera.follow(grandpa);
 		}
 		
 		cFrame ++;
@@ -292,7 +335,6 @@ class PlayState extends FlxState
 	override public function create():Void 
 	{
 		super.create();
-		FlxG.camera.fade(0xa2a2a2, 0.3, true);
 		FlxG.camera.setBounds(0, -Settings.WORLD_HEIGHT, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT + 100);
 		init();
 	}

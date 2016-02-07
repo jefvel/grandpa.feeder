@@ -21,6 +21,8 @@ class MenuState extends FlxState
 {
 	var keys = ["A", "D", "SPACE"];
 	var entered = false;
+	
+	var logobg:FlxSprite;
 	var logo:FlxSprite;
 	var logoBob = false;
 	var grandpa:FlxSprite;
@@ -38,6 +40,13 @@ class MenuState extends FlxState
 		super.create();
 		FlxG.mouse.visible = false;
 		
+		logobg = new FlxSprite(0, 0, AssetPaths.logobg__png);
+
+		logobg.x = FlxG.width * 0.5 - logobg.width * 0.5;
+		logobg.y = 70- logobg.height * 0.5;
+		logobg.alpha = 0;
+		add(logobg);
+		
 		bgs = new Array<FlxSprite>();
 		menuBgs = new FlxGroup();
 		var bg = new FlxSprite();
@@ -54,6 +63,9 @@ class MenuState extends FlxState
 		bgs.push(bg);
 		
 		add(menuBgs);
+		
+	
+		
 		
 		grandpa = new FlxSprite();
 		grandpa.loadGraphic(AssetPaths.grandpalarge__png);
@@ -82,6 +94,7 @@ class MenuState extends FlxState
 		logo.alpha = 0;
 		Timer.delay(function(){
 			FlxTween.tween(logo, { alpha:1.0 }, 0.4);
+			FlxTween.tween(logobg, { alpha:1.0 }, 0.2);
 			FlxG.sound.playMusic(AssetPaths.main_menu__ogg);
 			logoBob = true;
 		}, 400);
@@ -116,7 +129,7 @@ class MenuState extends FlxState
 	}
 
 	var bobs = -1;
-	var bobTime = 950 >> 1;
+	var bobTime = 950;
 	var lastT = 0;
 	
 	/**
@@ -133,6 +146,8 @@ class MenuState extends FlxState
 			enterGame();
 		}
 		
+		logobg.angularVelocity = -10;
+		
 		if (logoBob) {
 			var t = Std.int(FlxG.sound.music.time);
 			if (lastT > t) {
@@ -143,7 +158,7 @@ class MenuState extends FlxState
 			var currentBob = (t / bobTime);
 			if (Std.int(currentBob) > bobs) {
 				logo.y = 10;
-				bobs += 2;
+				bobs ++;
 			} else {
 				logo.y -= logo.y * 0.1;	
 			}

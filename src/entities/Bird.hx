@@ -9,6 +9,7 @@ class Bird extends FlyingEnemy
 {
 
 	var speed = 200;
+	var minheight = 200;
 	public function new() 
 	{
 		super();
@@ -25,6 +26,7 @@ class Bird extends FlyingEnemy
 		}
 		
 		x = Math.random() * Settings.WORLD_WIDTH;
+		y = -minheight - Math.random() * (Settings.WORLD_HEIGHT - minheight - 50);
 	}
 	
 	override public function update():Void 

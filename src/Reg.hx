@@ -30,6 +30,7 @@ class Reg
 	 * Example usage: Storing the current score.
 	 */
 	public static var score:Int = 0;
+	public static var birdsLeft:Int = 0;
 	
 	public static var depth:Int = 0;
 	
