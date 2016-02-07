@@ -7,7 +7,7 @@ package;
 class Settings
 {
 	public static var WORLD_WIDTH = 320;
-	public static var WORLD_HEIGHT = 2000;
+	public static var WORLD_HEIGHT = 3000;
 	
 	public static var BAT_COUNT = 70;
 	public static var CAT_COUNT = 30;

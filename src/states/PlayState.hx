@@ -1,6 +1,7 @@
 package states;
 
 import entities.Bird;
+import entities.BonerEmitter;
 import entities.Child;
 import entities.FlyingEnemy;
 import entities.Food;
@@ -30,6 +31,9 @@ class PlayState extends FlxState
 	
 	var startPopup:FlxSprite;
 	
+	
+	var clouds:FlxGroup;
+	
 	var treeLine1:FlxSprite;
 	var treeLine2:FlxSprite;
 	var treeLine3:FlxSprite;
@@ -41,6 +45,8 @@ class PlayState extends FlxState
 	var foodInHand:Food;
 	
 	var monsters:FlxGroup;
+	var boners:BonerEmitter;
+	
 	
 	var ground:Ground;
 	
@@ -67,6 +73,20 @@ class PlayState extends FlxState
 		
 		FlxG.worldBounds.set(0, -Settings.WORLD_HEIGHT, Settings.WORLD_WIDTH, Settings.WORLD_HEIGHT + 100);
 		
+		clouds = new FlxGroup();
+		var cloudScale = 0.4;
+		for (i in 0...30) {
+			var cloud = new FlxSprite();
+			cloud.loadGraphic(AssetPaths.clouds__png, false, 128, 64);
+			cloud.x = Math.floor(Math.random() * Settings.WORLD_WIDTH - cloud.width  * 0.5);
+			cloud.y = Math.floor(-Math.random() * Settings.WORLD_HEIGHT * cloudScale);
+			cloud.scrollFactor.y = cloudScale;
+			cloud.animation.randomFrame();
+			
+			clouds.add(cloud);
+		}
+		add(clouds);
+		
 		ground = new Ground();
 		add(ground);
 		
@@ -87,7 +107,7 @@ class PlayState extends FlxState
 		
 		treeLine1 = new FlxSprite(-90, -110, AssetPaths.treeline1__png);
 		add(treeLine1);
-		
+
 		//Grass
 		grassContainer = new FlxGroup();
 		for (i in 0...100) {
@@ -103,6 +123,9 @@ class PlayState extends FlxState
 		
 		monsters = new FlxGroup();
 		add(monsters);
+		
+		boners = new BonerEmitter();
+		add(boners);
 		
 		//Food
 		foodContainer = new FlxGroup();
@@ -193,6 +216,7 @@ class PlayState extends FlxState
 		
 		FlxG.collide(grandpa, monsters, function(grandpa:Grandpa, monster:FlyingEnemy) {
 			grandpa.eatMonster(monster);
+			boners.boner(monster);
 			monsters.remove(monster);
 		});
 		
